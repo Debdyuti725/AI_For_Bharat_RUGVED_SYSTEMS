@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bharat Access Hub — AI-Powered Government Scheme Discovery</title>
+    <meta name="description"
+        content="Discover government schemes you're eligible for using AI. Bharat Access Hub helps Indian citizens find financial aid, scholarships, housing, and more.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <!-- NAVBAR -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-brand">
+            <div class="nav-logo">🇮🇳</div>
+            <span class="nav-title">Bharat <span>Access Hub</span></span>
+        </div>
+        <div class="nav-links" id="nav-links">
+            <a href="#" data-page="dashboard" class="nav-link active">Dashboard</a>
+            <a href="#" data-page="schemes" class="nav-link">Explore Schemes</a>
+            <a href="#" data-page="jobs" class="nav-link">Jobs</a>
+            <a href="#" data-page="chat" class="nav-link">AI Chat</a>
+            <a href="#" data-page="documents" class="nav-link">Documents</a>
+            <a href="#" data-page="profile" class="nav-link">Profile</a>
+        </div>
+        <div class="nav-actions">
+            <select id="lang-select" class="lang-selector" title="Language" style="display:none;">
+                <option value="en">English</option>
+                <option value="hi">हिन्दी</option>
+                <option value="kn">ಕನ್ನಡ</option>
+                <option value="te">తెలుగు</option>
+                <option value="ta">தமிழ்</option>
+                <option value="bn">বাংলা</option>
+                <option value="mr">मराठी</option>
+                <option value="gu">ગుজরાதી</option>
+                <option value="ml">മലയാളം</option>
+                <option value="pa">ਪੰਜਾਬੀ</option>
+            </select>
+            <span class="user-badge" id="user-badge"></span>
+            <button class="btn btn-outline btn-sm" id="logout-btn" style="display:none;">Logout</button>
+        </div>
+    </nav>
+
+    <!-- AUTH PAGE -->
+    <div class="page" id="page-auth">
+        <div class="auth-container">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <div class="auth-logo-wrap">🇮🇳</div>
+                    <h1>Bharat Access Hub</h1>
+                    <p class="auth-subtitle">AI-Powered Government Scheme Discovery</p>
+                </div>
+                <div class="auth-tabs">
+                    <button class="auth-tab active" data-tab="login">Sign In</button>
+                    <button class="auth-tab" data-tab="signup">Sign Up</button>
+                </div>
+                <form id="login-form" class="auth-form">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="login-email" placeholder="your@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="login-password" placeholder="Enter password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full">Sign In</button>
+                </form>
+                <form id="signup-form" class="auth-form" style="display:none;">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="signup-name" placeholder="Your full name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="signup-email" placeholder="your@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="signup-password" placeholder="Min 6 characters" minlength="6" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full">Create Account</button>
+                </form>
+                <div id="auth-error" class="error-msg"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DASHBOARD PAGE -->
+    <div class="page hidden" id="page-dashboard">
+        <div class="container">
+            <div class="dashboard-header">
+                <div>
+                    <h1 class="page-title">Welcome, <span id="user-name-display">User</span>!</h1>
+                    <p class="page-subtitle">Here are your personalized scheme recommendations</p>
+                </div>
+                <div class="stats-row">
+                    <div class="stat-card">
+                        <div class="stat-number" id="stat-total">0</div>
+                        <div class="stat-label">Total Schemes</div>
+                    </div>
+                    <div class="stat-card stat-highlight">
+                        <div class="stat-number" id="stat-high">0</div>
+                        <div class="stat-label">High Matches</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="stat-benefit">₹0</div>
+                        <div class="stat-label">Potential Benefits</div>
+                    </div>
+                </div>
+            </div>
+            <div class="filter-bar">
+                <button class="filter-btn active" data-cat="all">All</button>
+                <button class="filter-btn" data-cat="agriculture">Agriculture</button>
+                <button class="filter-btn" data-cat="education">Education</button>
+                <button class="filter-btn" data-cat="health">Health</button>
+                <button class="filter-btn" data-cat="housing">Housing</button>
+                <button class="filter-btn" data-cat="employment">Employment</button>
+                <button class="filter-btn" data-cat="financial_aid">Financial Aid</button>
+            </div>
+            <div id="no-profile-banner" class="banner banner-warning" style="display:none;">
+                <strong>Complete your profile first!</strong> Answer 10 quick questions so we can find the best schemes for you.
+                <button class="btn btn-primary btn-sm" onclick="showPage('profile')">Complete Profile →</button>
+            </div>
+            <div class="scheme-grid" id="scheme-grid"></div>
+        </div>
+    </div>
+
+    <!-- PROFILE PAGE -->
+    <div class="page hidden" id="page-profile">
+        <div class="container">
+            <h1 class="page-title">My Profile</h1>
+            <p class="page-subtitle">Your personal details and scheme discovery progress</p>
+
+            <div id="profile-dashboard" style="display:none;">
+                <div class="profile-grid">
+                    <div class="profile-card">
+                        <div class="profile-avatar" id="profile-avatar">U</div>
+                        <h2 id="profile-name-display">User</h2>
+                        <p class="profile-email" id="profile-email-display">email@example.com</p>
+                        <div class="profile-badges">
+                            <span class="profile-badge badge-complete">✓ Tier 1 Complete</span>
+                            <span class="profile-badge" id="tier2-badge">Tier 2: 0/5</span>
+                        </div>
+                        <button class="btn btn-outline btn-sm" style="margin-top:1rem;" onclick="resetProfile()">🔄 Retake Questionnaire</button>
+                    </div>
+                    <div class="profile-info-section">
+                        <h3 class="section-title">📋 Personal Information</h3>
+                        <div class="info-grid" id="profile-info-grid"></div>
+                    </div>
+                </div>
+                <div class="tier2-section">
+                    <h3 class="section-title">🎯 Tier 2 — Deep-Dive Categories</h3>
+                    <p class="tier2-desc">Answer 10 deeper questions per category to improve your scheme matching accuracy.</p>
+                    <div class="tier2-grid" id="tier2-category-grid"></div>
+                </div>
+                <div class="profile-matches-section" id="profile-matches" style="display:none;">
+                    <h3 class="section-title">⭐ Top Scheme Matches</h3>
+                    <div id="profile-top-schemes"></div>
+                </div>
+                <div style="text-align:center;margin-top:1.5rem;">
+                    <button class="btn btn-primary" onclick="showPage('dashboard')">View Full Dashboard →</button>
+                </div>
+            </div>
+
+            <div id="questionnaire-section" style="display:none;">
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="profile-progress"><span>0%</span></div>
+                </div>
+                <div id="profile-status" class="profile-status"></div>
+                <div id="questionnaire-container"></div>
+            </div>
+
+            <div id="no-profile-state" style="display:none;">
+                <div class="empty-profile-card">
+                    <div class="empty-icon">👤</div>
+                    <h2>Let's Build Your Profile!</h2>
+                    <p>Answer 10 quick questions about yourself so we can find the best government schemes for you.</p>
+                    <button class="btn btn-primary" id="start-questionnaire-btn">Start Questionnaire →</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCHEMES EXPLORER PAGE -->
+    <div class="page hidden" id="page-schemes">
+        <div class="container">
+            <h1 class="page-title">Explore All Schemes</h1>
+            <p class="page-subtitle">Browse and search 89 government schemes</p>
+            <div class="search-bar">
+                <input type="text" id="scheme-search" placeholder="Search schemes... (e.g., 'student loan', 'farmer insurance', 'pension')" class="search-input">
+                <button class="btn btn-primary" id="search-btn">Search</button>
+            </div>
+            <div class="scheme-list" id="scheme-list"></div>
+            <div class="modal-overlay hidden" id="scheme-modal">
+                <div class="modal">
+                    <button class="modal-close" id="modal-close">✕</button>
+                    <div id="scheme-detail-content"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CHAT PAGE -->
+    <div class="page hidden" id="page-chat">
+        <div class="container container-narrow">
+            <h1 class="page-title">AI Assistant</h1>
+            <p class="page-subtitle">Ask me anything about government schemes — type or speak in any language</p>
+            <div class="chat-toolbar">
+                <label class="toggle-label">
+                    <input type="checkbox" id="tts-toggle" checked> 🔊 Read aloud
+                </label>
+                <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.82rem;color:var(--text-secondary);font-weight:500;">
+                    🌐 Language:
+                    <select id="chat-lang-select" class="lang-selector" title="Chat language">
+                        <option value="en">English</option>
+                        <option value="hi">हिन्दी</option>
+                        <option value="kn">ಕನ್ನಡ</option>
+                        <option value="te">తెలుగు</option>
+                        <option value="ta">தமிழ்</option>
+                        <option value="bn">বাংলা</option>
+                        <option value="mr">मराठी</option>
+                        <option value="gu">ગુજرातী</option>
+                        <option value="ml">മലയാളം</option>
+                        <option value="pa">ਪੰਜਾਬੀ</option>
+                    </select>
+                </label>
+            </div>
+            <div class="chat-container" id="chat-container">
+                <div class="chat-messages" id="chat-messages">
+                    <div class="chat-message bot">
+                        <div class="chat-avatar">🤖</div>
+                        <div class="chat-bubble">
+                            Namaste! I'm your AI assistant. I can help you with:
+                            <ul>
+                                <li>Finding schemes you're eligible for</li>
+                                <li>Understanding application processes</li>
+                                <li>Required documents for each scheme</li>
+                                <li>Answering questions in your language</li>
+                            </ul>
+                            Ask me anything! You can also use the 🎤 button to speak.
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-input-container">
+                    <button class="btn btn-outline voice-btn" id="voice-input-btn" title="Speak your question">🎤</button>
+                    <button class="btn btn-outline voice-btn" id="voice-stop-btn" title="Stop listening" style="display:none;">⏹</button>
+                    <input type="text" id="chat-input" placeholder="Type or speak your question..." class="chat-input">
+                    <button class="btn btn-primary chat-send" id="chat-send">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DOCUMENT UPLOAD PAGE -->
+    <div class="page hidden" id="page-documents">
+        <div class="container container-narrow">
+            <h1 class="page-title">Document Intelligence</h1>
+            <p class="page-subtitle">Upload a government form or document — AI will explain it in simple language</p>
+
+            <div class="upload-area" id="upload-area">
+                <div class="upload-icon">📄</div>
+                <h3>Drop your PDF here or click to upload</h3>
+                <p>Supports PDF files up to 10MB</p>
+                <input type="file" id="file-input" accept=".pdf" style="display:none;">
+                <button class="btn btn-primary" id="upload-btn">Choose PDF File</button>
+            </div>
+
+            <div id="doc-loading" class="doc-loading" style="display:none;">
+                <div class="typing-indicator" style="justify-content:center;">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+                <p>Analyzing your document...</p>
+            </div>
+
+            <div id="doc-result" class="doc-result" style="display:none;">
+                <div class="doc-result-header">
+                    <h2 id="doc-filename"></h2>
+                    <button class="btn btn-outline btn-sm" id="doc-tts-btn">🔊 Read Aloud</button>
+                </div>
+                <div class="doc-section">
+                    <h3>📋 Summary</h3>
+                    <p id="doc-summary"></p>
+                </div>
+                <div class="doc-section" id="doc-fields-section" style="display:none;">
+                    <h3>📝 Key Fields</h3>
+                    <ul id="doc-fields"></ul>
+                </div>
+                <div class="doc-section" id="doc-actions-section" style="display:none;">
+                    <h3>✅ Actions Required</h3>
+                    <ol id="doc-actions"></ol>
+                </div>
+                <div class="doc-section" id="doc-docs-section" style="display:none;">
+                    <h3>📎 Documents Needed</h3>
+                    <ul id="doc-docs-needed"></ul>
+                </div>
+                <details class="doc-section">
+                    <summary>📄 Extracted Text</summary>
+                    <pre id="doc-raw-text" class="doc-raw-text"></pre>
+                </details>
+                <button class="btn btn-outline" id="upload-another" style="margin-top:1rem;">Upload Another Document</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JOBS PAGE -->
+    <div class="page hidden" id="page-jobs">
+        <div class="container">
+            <h1 class="page-title">Job Listings</h1>
+            <p class="page-subtitle">Browse jobs sourced from OLX across major Indian cities</p>
+
+            <div class="jobs-controls">
+                <input type="text" id="job-search" placeholder="Search jobs... (e.g., driver, cook, delivery)" class="search-input">
+                <select id="job-city-filter" class="lang-selector" style="padding:0.7rem 0.9rem;font-size:0.85rem;">
+                    <option value="">All Cities</option>
+                </select>
+                <select id="job-cat-filter" class="lang-selector" style="padding:0.7rem 0.9rem;font-size:0.85rem;">
+                    <option value="">All Categories</option>
+                </select>
+                <button class="btn btn-primary" id="job-search-btn">Search</button>
+            </div>
+
+            <div id="jobs-stats" class="jobs-stats"></div>
+            <div id="job-list" class="job-list"></div>
+            <div id="jobs-pagination" style="display:none;margin-top:1.5rem;">
+                <div class="jobs-page-info" id="jobs-page-info"></div>
+                <div style="display:flex;gap:0.5rem;justify-content:center;margin-top:0.5rem;">
+                    <button class="btn btn-outline" id="jobs-prev-btn">← Previous</button>
+                    <button class="btn btn-outline" id="jobs-next-btn">Next →</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TIER 2 REMINDER POPUP -->
+    <div class="modal-overlay hidden" id="tier2-reminder-modal">
+        <div class="modal" style="max-width:460px;text-align:center;">
+            <div style="font-size:2.5rem;margin-bottom:1rem;">🎯</div>
+            <h2 style="margin-bottom:0.5rem;">Boost Your Matches!</h2>
+            <p style="color:var(--text-secondary);font-size:0.9rem;margin-bottom:1.5rem;line-height:1.6;">
+                You've completed your basic profile — great start! Complete Tier 2 category questions to unlock more accurate scheme recommendations and higher benefit amounts.
+            </p>
+            <div style="display:flex;flex-direction:column;gap:0.5rem;margin-bottom:1.25rem;" id="tier2-reminder-cats"></div>
+            <div style="display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
+                <button class="btn btn-primary" id="tier2-go-btn">Complete Now →</button>
+                <button class="btn btn-outline" id="tier2-later-btn">Remind Me Later</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+
+</html>
